@@ -1,7 +1,5 @@
 ﻿// ReSharper disable InvokeAsExtensionMethod, unhollowed extension methods are cursed.
 
-using System.Threading.Tasks;
-
 namespace LabCam.Scripts;
 
 [RegisterTypeInIl2Cpp]
