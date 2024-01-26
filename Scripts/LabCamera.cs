@@ -1,4 +1,5 @@
-﻿namespace LabCam.Scripts;
+﻿// ReSharper disable InvokeAsExtensionMethod, unhollowed extension methods are cursed.
+namespace LabCam.Scripts;
 
 [RegisterTypeInIl2Cpp]
 public class LabCamera : MonoBehaviour
@@ -99,12 +100,12 @@ public class LabCamera : MonoBehaviour
         {
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg");
             // Don't need PNG for a 480p image.
-            bytes = image.EncodeToJPG();
+            bytes = ImageConversion.EncodeToJPG(image);
         }
         else
         {
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
-            bytes = image.EncodeToPNG();
+            bytes = ImageConversion.EncodeToPNG(image);
         }
         
         File.WriteAllBytes(path, bytes);
