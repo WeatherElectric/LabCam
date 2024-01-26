@@ -94,7 +94,7 @@ public class LabCamera : MonoBehaviour
         File.WriteAllBytes(path, bytes);
         HideHead();
         ShowQuagmire();
-        if (_flash) Invoke(nameof(LightDisable), 1f);
+        if (_flash) Invoke(nameof(LightDisable), 0.3f);
     }
 
     private void LightDisable()

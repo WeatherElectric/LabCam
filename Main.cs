@@ -18,5 +18,8 @@ public class Main : MelonMod
         BoneMenu.Setup();
         UserData.Setup();
         Assets.Load();
+#if DEBUG
+        ModConsole.Msg("This is a debug build! Possibly unstable!");
+#endif
     }
 }
