@@ -19,33 +19,44 @@ public class LabCamera : MonoBehaviour
     
     private void Start()
     {
-        _camera = transform.Find("Camera").GetComponent<Camera>();
+        AssignFields();
+        SetQuality();
+        SetMixers();
+    }
+
+    private void SetMixers()
+    {
         var impactSfx = GetComponent<ImpactSFX>();
         if (impactSfx != null) impactSfx.outputMixer = Audio.SFXMixer;
+        if (_captureSound != null) _captureSound.outputAudioMixerGroup = Audio.SFXMixer;
+    }
+
+    // Temporary until we move on to ML 1.0, since we don't have fieldinjection for IL2CPP without adding another dependency, and I don't want to do that for a mod like this.
+    private void AssignFields()
+    {
+        _camera = transform.Find("Camera").GetComponent<Camera>();
         _captureSound = transform.Find("CaptureSound").GetComponent<AudioSource>();
-        // WOOOO FUCK YOU SDK MODDERS I CAN DO THIS!
-        _captureSound.outputAudioMixerGroup = Audio.SFXMixer;
         _previewRenderer = transform.Find("LensPreview").GetComponent<MeshRenderer>();
         _flashRenderer = transform.Find("FlashWarning").gameObject;
         _light = transform.Find("Flash").gameObject;
-        SetQuality();
     }
-
+    
+    // TODO: Maybe just modify the material instead of swapping it out? I'd need Scanline's shadercode though since the property to change isn't MainTex.
     public void SetQuality()
     {
         switch (Preferences.Quality.Value)
         {
             case ImageQuality.Low:
-                _camera.targetTexture = Assets.LowQualityRt;
-                _previewRenderer.material = Assets.LowQualityMat;
+                _camera.targetTexture = Assets.RenderTextures.LowQuality;
+                _previewRenderer.material = Assets.Materials.LowQuality;
                 break;
             case ImageQuality.Medium:
-                _camera.targetTexture = Assets.MediumQualityRt;
-                _previewRenderer.material = Assets.MediumQualityMat;
+                _camera.targetTexture = Assets.RenderTextures.MediumQuality;
+                _previewRenderer.material = Assets.Materials.MediumQuality;
                 break;
             case ImageQuality.High:
-                _camera.targetTexture = Assets.HighQualityRt;
-                _previewRenderer.material = Assets.HighQualityMat;
+                _camera.targetTexture = Assets.RenderTextures.HighQuality;
+                _previewRenderer.material = Assets.Materials.HighQuality;
                 break;
             default:
                 ModConsole.Error("Invalid quality setting!");
@@ -68,76 +79,79 @@ public class LabCamera : MonoBehaviour
         }
         
         _captureSound.Play();
-        ShowHead();
-        HideQuagmire();
+        SetHairMeshes(true);
+        SetQuagmire(false);
         if (_flash) _light.SetActive(true);
-        RenderTexture rt = _camera.targetTexture;
-        Texture2D screenShot = new Texture2D(rt.width, rt.height);
-        _camera.Render();
-        RenderTexture.active = rt;
-        screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        
+        SaveRenderedImage(Render());
+        
+        SetHairMeshes(false);
+        SetQuagmire(true);
+        if (_flash) Invoke(nameof(LightDisable), 0.3f);
+    }
 
+    private static void SaveRenderedImage(Texture2D image)
+    {
         string path;
         byte[] bytes;
+        
         if (Preferences.Quality.Value == ImageQuality.Low)
         {
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg");
-            // ReSharper disable once InvokeAsExtensionMethod, unhollowed extension methods are cursed, they really need an excorcism
-            bytes = ImageConversion.EncodeToJPG(screenShot);
+            // Don't need PNG for a 480p image.
+            bytes = image.EncodeToJPG();
         }
         else
         {
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
-            // ReSharper disable once InvokeAsExtensionMethod, unhollowed extension methods are cursed, they really need an excorcism
-            bytes = ImageConversion.EncodeToPNG(screenShot);
+            bytes = image.EncodeToPNG();
         }
-        Destroy(screenShot);
+        
         File.WriteAllBytes(path, bytes);
-        HideHead();
-        ShowQuagmire();
-        if (_flash) Invoke(nameof(LightDisable), 0.3f);
         ModConsole.Msg($"Saved picture to {path}");
+        // Destroy the Texture2D since it's not needed, the PNG/JPG is saved, save some memory by deleting the Texture2D.
+        Destroy(image);
     }
 
+    private Texture2D Render()
+    {
+        RenderTexture rt = _camera.targetTexture;
+        Texture2D image = new Texture2D(rt.width, rt.height);
+        _camera.Render();
+        RenderTexture.active = rt;
+        image.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        image.Apply();
+        return image;
+    }
+
+    // Avoids needing a coroutine if I can just call it delayed with an Invoke, I'd like to avoid needing Jevilib's coroutine fix for this mod.
     private void LightDisable()
     {
         _light.SetActive(false);
     }
     
-    private static void HideHead()
+    private static void SetHairMeshes(bool state)
     {
         var hairMeshes = Player.rigManager.avatar.hairMeshes;
-        if (hairMeshes == null) return;
         foreach (var hairMesh in hairMeshes)
         {
-            hairMesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            if (hairMesh == null) return;
+            hairMesh.shadowCastingMode = state switch
+            {
+                true => UnityEngine.Rendering.ShadowCastingMode.TwoSided,
+                false => UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly
+            };
         }
     }
     
-    private static void ShowHead()
-    {
-        var hairMeshes = Player.rigManager.avatar.hairMeshes;
-        if (hairMeshes == null) return;
-        foreach (var hairMesh in hairMeshes)
-        {
-            hairMesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
-        }
-    }
-    
-    private static void HideQuagmire()
+    // Do not question my naming schemes, they are perfect.
+    private static void SetQuagmire(bool state)
     {
         if (Quagmire.Instance == null) return;
-        Quagmire.Instance.giggity.SetActive(false);
-        Quagmire.Instance.giggityPreview.SetActive(false);
+        Quagmire.Instance.giggity.SetActive(state);
+        Quagmire.Instance.giggityPreview.SetActive(state);
     }
     
-    private static void ShowQuagmire()
-    {
-        if (Quagmire.Instance == null) return;
-        Quagmire.Instance.giggity.SetActive(true);
-        Quagmire.Instance.giggityPreview.SetActive(true);
-    }
-
     private void OnDestroy()
     {
         Instance = null;

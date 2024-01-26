@@ -17,6 +17,12 @@ public class Quagmire : MonoBehaviour
     
     private void Start()
     {
+        SetFields();
+        SetQuality();
+    }
+
+    private void SetFields()
+    {
         giggity = transform.Find("Scale").gameObject;
         giggityPreview = transform.Find("Preview").gameObject;
         giggityRenderer = giggityPreview.GetComponent<MeshRenderer>();
@@ -27,13 +33,13 @@ public class Quagmire : MonoBehaviour
         switch (Preferences.Quality.Value)
         {
             case ImageQuality.Low:
-                giggityRenderer.material = Assets.LowQualityMat;
+                giggityRenderer.material = Assets.Materials.LowQuality;
                 break;
             case ImageQuality.Medium:
-                giggityRenderer.material = Assets.MediumQualityMat;
+                giggityRenderer.material = Assets.Materials.MediumQuality;
                 break;
             case ImageQuality.High:
-                giggityRenderer.material = Assets.HighQualityMat;
+                giggityRenderer.material = Assets.Materials.HighQuality;
                 break;
             default:
                 ModConsole.Error("Invalid quality setting!");

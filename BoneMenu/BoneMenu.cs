@@ -24,7 +24,7 @@ internal static class BoneMenu
     {
         if (LabCamera.Instance != null) return;
         var location = Player.playerHead.position + Player.playerHead.forward * 2f;
-        Object.Instantiate(Assets.CameraPrefab, location, Quaternion.identity);
+        Object.Instantiate(Assets.Prefabs.CameraPrefab, location, Quaternion.identity);
     }
 
     private static void DespawnCam()
@@ -37,7 +37,7 @@ internal static class BoneMenu
     {
         if (Quagmire.Instance != null) return;
         var location = Player.playerHead.position + Player.playerHead.forward * 2f;
-        Object.Instantiate(Assets.TriggerPrefab, location, Quaternion.identity);
+        Object.Instantiate(Assets.Prefabs.TriggerPrefab, location, Quaternion.identity);
     }
     
     private static void DespawnTrigger()
