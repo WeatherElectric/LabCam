@@ -1,4 +1,7 @@
 ﻿// ReSharper disable InvokeAsExtensionMethod, unhollowed extension methods are cursed.
+
+using System.Threading.Tasks;
+
 namespace LabCam.Scripts;
 
 [RegisterTypeInIl2Cpp]
@@ -107,9 +110,22 @@ public class LabCamera : MonoBehaviour
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
             bytes = ImageConversion.EncodeToPNG(image);
         }
-        
-        File.WriteAllBytes(path, bytes);
-        ModConsole.Msg($"Saved picture to {path}");
+
+        Task.Run(() =>
+        {
+            File.WriteAllBytes(path, bytes);
+        }).ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                ModConsole.Error($"Failed to save picture to {path}!");
+                ModConsole.Error(task.Exception?.ToString());
+            }
+            else
+            {
+                ModConsole.Msg($"Saved picture to {path}");
+            }
+        }, TaskScheduler.FromCurrentSynchronizationContext());
         // Destroy the Texture2D since it's not needed, the PNG/JPG is saved, save some memory by deleting the Texture2D.
         Destroy(image);
     }
