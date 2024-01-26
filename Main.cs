@@ -11,6 +11,8 @@ public class Main : MelonMod
     
     internal static Assembly CurrAsm => Assembly.GetExecutingAssembly();
 
+    internal static string CurrentMap;
+
     public override void OnInitializeMelon()
     {
         ModConsole.Setup(LoggerInstance);
@@ -18,8 +20,14 @@ public class Main : MelonMod
         BoneMenu.Setup();
         UserData.Setup();
         Assets.Load();
+        Hooking.OnLevelInitialized += OnLevelLoad;
 #if DEBUG
         ModConsole.Msg("This is a debug build! Possibly unstable!");
 #endif
+    }
+
+    private static void OnLevelLoad(LevelInfo levelInfo)
+    {
+        CurrentMap = levelInfo.title.Replace(" ", "");
     }
 }

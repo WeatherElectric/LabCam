@@ -78,16 +78,17 @@ public class LabCamera : MonoBehaviour
         screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
 
         string path;
-        // ReSharper disable once InvokeAsExtensionMethod, unhollowed extension methods are cursed, they really need an excorcism
         byte[] bytes;
         if (Preferences.Quality.Value == ImageQuality.Low)
         {
-            path = Path.Combine(UserData.ModPath, $"BONELAB_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg");
+            path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg");
+            // ReSharper disable once InvokeAsExtensionMethod, unhollowed extension methods are cursed, they really need an excorcism
             bytes = ImageConversion.EncodeToJPG(screenShot);
         }
         else
         {
-            path = Path.Combine(UserData.ModPath, $"BONELAB_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
+            path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
+            // ReSharper disable once InvokeAsExtensionMethod, unhollowed extension methods are cursed, they really need an excorcism
             bytes = ImageConversion.EncodeToPNG(screenShot);
         }
         Destroy(screenShot);
@@ -95,6 +96,7 @@ public class LabCamera : MonoBehaviour
         HideHead();
         ShowQuagmire();
         if (_flash) Invoke(nameof(LightDisable), 0.3f);
+        ModConsole.Msg($"Saved picture to {path}");
     }
 
     private void LightDisable()
