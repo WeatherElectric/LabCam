@@ -82,7 +82,10 @@
         <Compile Include="Scripts\Quagmire.cs" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="Resources\Windows.bundle" />
+      <EmbeddedResource Include="Resources\Windows.bundle" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Android.bundle" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <PropertyGroup>

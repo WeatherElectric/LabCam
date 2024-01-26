@@ -10,7 +10,8 @@ internal static class BoneMenu
         {
             Preferences.Quality.Value = v;
             Preferences.OwnCategory.SaveToFile(false);
-            LabCamera.Instance.SetQuality();
+            if (LabCamera.Instance != null) LabCamera.Instance.SetQuality();
+            if (Quagmire.Instance != null) Quagmire.Instance.SetQuality();
         });
         subCat.CreateFunctionElement("Spawn Camera", Color.green, SpawnCam);
         subCat.CreateFunctionElement("Despawn Camera", Color.red, DespawnCam);
@@ -22,7 +23,8 @@ internal static class BoneMenu
     private static void SpawnCam()
     {
         if (LabCamera.Instance != null) return;
-        Object.Instantiate(Assets.CameraPrefab);
+        var location = Player.playerHead.position + Player.playerHead.forward * 2f;
+        Object.Instantiate(Assets.CameraPrefab, location, Quaternion.identity);
     }
 
     private static void DespawnCam()
@@ -33,13 +35,14 @@ internal static class BoneMenu
     
     private static void SpawnTrigger()
     {
-        if (LabCamera.Instance != null) return;
-        Object.Instantiate(Assets.TriggerPrefab);
+        if (Quagmire.Instance != null) return;
+        var location = Player.playerHead.position + Player.playerHead.forward * 2f;
+        Object.Instantiate(Assets.TriggerPrefab, location, Quaternion.identity);
     }
     
     private static void DespawnTrigger()
     {
-        if (LabCamera.Instance == null) return;
+        if (Quagmire.Instance == null) return;
         Object.Destroy(Quagmire.Instance.gameObject);
     }
 }

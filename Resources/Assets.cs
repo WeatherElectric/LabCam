@@ -15,10 +15,6 @@ internal static class Assets
     public static Material MediumQualityMat;
     public static Material LowQualityMat;
     
-    public static Material HighQualityMatUI;
-    public static Material MediumQualityMatUI;
-    public static Material LowQualityMatUI;
-    
     public static void Load()
     {
         // can the quest kill itself
@@ -33,10 +29,5 @@ internal static class Assets
         HighQualityMat = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/HighQualityPreview.mat");
         MediumQualityMat = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/MediumQualityPreview.mat");
         LowQualityMat = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/LowQualityPreview.mat");
-        
-        HighQualityMatUI = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/HighQualityPreview2.mat");
-        MediumQualityMatUI = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/MediumQualityPreview2.mat");
-        LowQualityMatUI = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/LowQualityPreview2.mat");
-        
     }
 }

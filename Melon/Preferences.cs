@@ -15,7 +15,7 @@ internal static class Preferences
         LoggingMode = GlobalCategory.GetEntry<int>("LoggingMode") ?? GlobalCategory.CreateEntry("LoggingMode", 0, "Logging Mode", "The level of logging to use. 0 = Important Only, 1 = All");
         GlobalCategory.SetFilePath(MelonUtils.UserDataDirectory + "/WeatherElectric.cfg");
         GlobalCategory.SaveToFile(false);
-        Quality = OwnCategory.GetEntry<ImageQuality>("ImageQuality") ?? OwnCategory.CreateEntry("ImageQuality", ImageQuality.High, "Image Quality", "The quality of the images taken. Low = 480p, Medium = 720p, High = 1080p");
+        OwnCategory.CreateEntry("ImageQuality", HelperMethods.IsAndroid() ? ImageQuality.Low : ImageQuality.High, "Image Quality", "The quality of the images taken. Low = 480p, Medium = 720p, High = 1080p");
         OwnCategory.SetFilePath(MelonUtils.UserDataDirectory + "/WeatherElectric.cfg");
         OwnCategory.SaveToFile(false);
         ModConsole.Msg("Finished preferences setup for LabCam", 1);
