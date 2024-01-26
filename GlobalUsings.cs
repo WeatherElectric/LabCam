@@ -10,4 +10,5 @@ global using UnityEngine;
 global using LabCam.Menu;
 global using LabCam.Resources;
 global using LabCam.Scripts;
+global using SLZ.SFX;
 global using Object = UnityEngine.Object;

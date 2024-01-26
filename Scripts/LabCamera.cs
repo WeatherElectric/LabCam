@@ -1,11 +1,14 @@
 ﻿namespace LabCam.Scripts;
 
+[RegisterTypeInIl2Cpp]
 public class LabCamera : MonoBehaviour
 {
     public static LabCamera Instance;
 
     private Camera _camera;
     private AudioSource _captureSound;
+    private MeshRenderer _previewRenderer;
+    private MeshRenderer _previewRendererUI;
     
     private void Awake()
     {
@@ -15,7 +18,39 @@ public class LabCamera : MonoBehaviour
     private void Start()
     {
         _camera = transform.Find("Camera").GetComponent<Camera>();
+        var impactSFX = GetComponent<ImpactSFX>();
+        if (impactSFX != null) impactSFX.outputMixer = Audio.SFXMixer;
         _captureSound = transform.Find("CaptureSound").GetComponent<AudioSource>();
+        // WOOOO FUCK YOU SDK MODDERS I CAN DO THIS!
+        _captureSound.outputAudioMixerGroup = Audio.SFXMixer;
+        _previewRenderer = transform.Find("LensPreview").GetComponent<MeshRenderer>();
+        _previewRendererUI = transform.Find("WindowPreview").GetComponent<MeshRenderer>();
+        SetQuality();
+    }
+
+    public void SetQuality()
+    {
+        switch (Preferences.Quality.Value)
+        {
+            case ImageQuality.Low:
+                _camera.targetTexture = Assets.LowQualityRt;
+                _previewRendererUI.material = Assets.LowQualityMatUI;
+                _previewRenderer.material = Assets.LowQualityMat;
+                break;
+            case ImageQuality.Medium:
+                _camera.targetTexture = Assets.MediumQualityRt;
+                _previewRendererUI.material = Assets.MediumQualityMatUI;
+                _previewRenderer.material = Assets.MediumQualityMat;
+                break;
+            case ImageQuality.High:
+                _camera.targetTexture = Assets.HighQualityRt;
+                _previewRendererUI.material = Assets.HighQualityMatUI;
+                _previewRenderer.material = Assets.HighQualityMat;
+                break;
+            default:
+                ModConsole.Error("Invalid quality setting!");
+                break;
+        }
     }
 
     public void Capture()
@@ -65,4 +100,6 @@ public class LabCamera : MonoBehaviour
     {
         Instance = null;
     }
+    
+    public LabCamera(IntPtr ptr) : base(ptr) { }
 }
