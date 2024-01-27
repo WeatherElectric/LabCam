@@ -9,6 +9,7 @@ public class Quagmire : MonoBehaviour
     public GameObject giggity;
     public GameObject giggityPreview;
     public MeshRenderer giggityRenderer;
+    public AudioSource giggityAudio;
     
     private void Awake()
     {
@@ -26,6 +27,7 @@ public class Quagmire : MonoBehaviour
         giggity = transform.Find("Scale").gameObject;
         giggityPreview = transform.Find("Preview").gameObject;
         giggityRenderer = giggityPreview.GetComponent<MeshRenderer>();
+        giggityAudio = transform.Find("TriggerSound").GetComponent<AudioSource>();
     }
 
     public void SetQuality()
@@ -46,10 +48,11 @@ public class Quagmire : MonoBehaviour
                 break;
         }
     }
-    
+	
     public void SendCapture()
     {
         if (LabCamera.Instance == null) return;
+        giggityAudio.Play();
         LabCamera.Instance.Capture();
     }
 
