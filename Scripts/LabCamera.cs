@@ -1,5 +1,7 @@
 ﻿// ReSharper disable InvokeAsExtensionMethod, unhollowed extension methods are cursed.
 
+using SLZ.VRMK;
+
 namespace LabCam.Scripts;
 
 [RegisterTypeInIl2Cpp]
@@ -13,6 +15,8 @@ public class LabCamera : MonoBehaviour
     private GameObject _flashRenderer;
     private bool _flash;
     private GameObject _light;
+
+    private PlayerAvatarArt _avatarArt;
     
     private void Awake()
     {
@@ -41,6 +45,7 @@ public class LabCamera : MonoBehaviour
         _previewRenderer = transform.Find("LensPreview").GetComponent<MeshRenderer>();
         _flashRenderer = transform.Find("FlashWarning").gameObject;
         _light = transform.Find("Flash").gameObject;
+        _avatarArt = Player.rigManager.gameObject.GetComponent<PlayerAvatarArt>();
     }
     
     // TODO: Maybe just modify the material instead of swapping it out? I'd need Scanline's shadercode though since the property to change isn't MainTex.
@@ -109,21 +114,7 @@ public class LabCamera : MonoBehaviour
             bytes = ImageConversion.EncodeToPNG(image);
         }
 
-        Task.Run(() =>
-        {
-            File.WriteAllBytes(path, bytes);
-        }).ContinueWith(task =>
-        {
-            if (task.IsFaulted)
-            {
-                ModConsole.Error($"Failed to save picture to {path}!");
-                ModConsole.Error(task.Exception?.ToString());
-            }
-            else
-            {
-                ModConsole.Msg($"Saved picture to {path}");
-            }
-        }, TaskScheduler.FromCurrentSynchronizationContext());
+        File.WriteAllBytes(path, bytes);
         // Destroy the Texture2D since it's not needed, the PNG/JPG is saved, save some memory by deleting the Texture2D.
         Destroy(image);
     }
@@ -131,11 +122,10 @@ public class LabCamera : MonoBehaviour
     private Texture2D Render()
     {
         RenderTexture rt = _camera.targetTexture;
-        Texture2D image = new Texture2D(rt.width, rt.height);
+        Texture2D image = new Texture2D(rt.width, rt.height, rt.graphicsFormat, rt.mipmapCount, TextureCreationFlags.None);
         _camera.Render();
         RenderTexture.active = rt;
         image.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-        image.Apply();
         return image;
     }
 
@@ -145,17 +135,17 @@ public class LabCamera : MonoBehaviour
         _light.SetActive(false);
     }
     
-    private static void SetHairMeshes(bool state)
+    private void SetHairMeshes(bool state)
     {
-        var hairMeshes = Player.rigManager.avatar.hairMeshes;
-        foreach (var hairMesh in hairMeshes)
+        if (_avatarArt == null) return;
+        switch (state)
         {
-            if (hairMesh == null) return;
-            hairMesh.shadowCastingMode = state switch
-            {
-                true => UnityEngine.Rendering.ShadowCastingMode.TwoSided,
-                false => UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly
-            };
+            case true:
+                _avatarArt.EnableHair();
+                break;
+            case false:
+                _avatarArt.DisableHair();
+                break;
         }
     }
     

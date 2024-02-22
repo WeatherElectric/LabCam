@@ -6,9 +6,10 @@ internal static class Assets
     
     public static void Load()
     {
-        // can the quest kill itself
-        _assetBundle = HelperMethods.LoadEmbeddedAssetBundle(Main.CurrAsm, HelperMethods.IsAndroid() ? "LabCam.Resources.Android.bundle" : "LabCam.Resources.Windows.bundle");
-        
+        // Quest code modding is fucked because of a software update that locked the data folder. Not even bothering at the moment.
+        // _assetBundle = HelperMethods.LoadEmbeddedAssetBundle(Main.CurrAsm, HelperMethods.IsAndroid() ? "LabCam.Resources.Android.bundle" : "LabCam.Resources.Windows.bundle");
+
+        _assetBundle = HelperMethods.LoadEmbeddedAssetBundle(Main.CurrAsm, "LabCam.Resources.Windows.bundle");
         if (_assetBundle == null) return;
         Prefabs.LoadPrefabs();
         RenderTextures.LoadRenderTextures();

@@ -1,7 +1,6 @@
 global using System;
 global using System.IO;
 global using System.Reflection;
-global using System.Threading.Tasks;
 global using BoneLib;
 global using MelonLoader;
 global using LabCam.Melon;
@@ -12,4 +11,5 @@ global using LabCam.Menu;
 global using LabCam.Resources;
 global using LabCam.Scripts;
 global using SLZ.SFX;
+global using UnityEngine.Experimental.Rendering;
 global using Object = UnityEngine.Object;

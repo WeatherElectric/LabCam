@@ -5,7 +5,7 @@ internal static class BoneMenu
     public static void Setup()
     {
         MenuCategory mainCat = MenuManager.CreateCategory("Weather Electric", "#6FBDFF");
-        MenuCategory subCat = mainCat.CreateCategory("LabCam", "#DF71DE");
+        MenuCategory subCat = mainCat.CreateCategory("LabCam", "#ffad2d");
         subCat.CreateEnumElement("Quality", Color.white, Preferences.Quality.Value, v =>
         {
             Preferences.Quality.Value = v;

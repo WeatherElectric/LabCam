@@ -6,8 +6,8 @@ public class Main : MelonMod
     internal const string Description = "Take pictures with a physical camera that save to a file!";
     internal const string Author = "SoulWithMae";
     internal const string Company = "Weather Electric";
-    internal const string Version = "0.0.1";
-    internal const string DownloadLink = null;
+    internal const string Version = "1.0.0";
+    internal const string DownloadLink = "https://bonelab.thunderstore.io/package/SoulWithMae/LabCam/";
     
     internal static Assembly CurrAsm => Assembly.GetExecutingAssembly();
 
