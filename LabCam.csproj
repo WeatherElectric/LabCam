@@ -86,6 +86,9 @@
     <ItemGroup>
       <EmbeddedResource Include="Resources\Windows.bundle" />
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Android.bundle" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <PropertyGroup>
         <PostBuildEvent>COPY "$(TargetPath)" "I:\Steam\steamapps\common\BONELAB\Mods"
