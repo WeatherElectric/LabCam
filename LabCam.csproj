@@ -92,7 +92,7 @@
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <PropertyGroup>
         <PostBuildEvent>COPY "$(TargetPath)" "I:\Steam\steamapps\common\BONELAB\Mods"
-            COPY "$(TargetPath)" "$(SolutionDir)\Staging\Mods"
+            COPY "$(TargetPath)" "$(SolutionDir)Staging\Mods"
         </PostBuildEvent>
     </PropertyGroup>
 </Project>
