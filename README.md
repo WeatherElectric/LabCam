@@ -16,16 +16,27 @@ A physical camera that saves what it captures to a file.
 1. Install the dependencies:
 > [BoneLib](https://bonelab.thunderstore.io/package/gnonme/BoneLib/)
 > 
-> [MelonLoader 0.5.7](https://bonelab.thunderstore.io/package/LavaGang/MelonLoader/)
+> [MelonLoader 0.6.6](https://bonelab.thunderstore.io/package/LavaGang/MelonLoader/)
 2. Drag LabCam.dll into the Mods folder.
+3. Subscribe to [the SDK mod](https://mod.io/g/bonelab/m/labcam)
 
 ## Usage
 
 Press the menu button with your right hand to take a picture.
 
-Press the menu button with your left hand to toggle the flash.
+Press the trigger with your right hand to toggle the flash.
 
 Pictures are saved to `BONELAB\UserData\Weather Electric\LabCam`
+
+## Fusion Support
+
+The mod does support Fusion.
+
+However, only one camera can be spawned at a time.
+
+Only one camera at a time is for a few reasons:
+1. I can't be bothered to make new render textures for each camera that is spawned, plus that'd be a memory management nightmare.
+2. I can't be bothered to figure out how to make it so that the camera only saves pictures to whoever took it's folder, so instead there's only one camera and it gets saved to the host's folder.
 
 ## Configuration
 

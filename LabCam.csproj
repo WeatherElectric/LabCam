@@ -1,98 +1,84 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{45D76E99-D2DC-47EE-9CDE-E84CEF86E4F9}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>LabCam</RootNamespace>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <RootNamespace>WeatherElectric.LabCam</RootNamespace>
+        <LangVersion>default</LangVersion>
+        <IsPackable>false</IsPackable>
+        <Company>Weather Electric</Company>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
         <AssemblyName>LabCam</AssemblyName>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <LangVersion>10</LangVersion>
+        <Title>LabCam</Title>
+        <Authors>Mabel Amber</Authors>
+        <Description>Press the menu button with your right hand to take a picture.
+
+Press the trigger with your right hand to toggle the flash.
+
+Pictures are saved to `BONELAB\UserData\Weather Electric\LabCam`</Description>
+        <Copyright>Weather Electric</Copyright>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>RELEASE;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>References\Assembly-CSharp.dll</HintPath>
-        </Reference>
-        <Reference Include="BoneLib">
-            <HintPath>References\BoneLib.dll</HintPath>
-        </Reference>
-        <Reference Include="Il2Cppmscorlib">
-            <HintPath>References\Il2Cppmscorlib.dll</HintPath>
-        </Reference>
-        <Reference Include="MelonLoader">
-            <HintPath>References\MelonLoader.dll</HintPath>
-        </Reference>
-        <Reference Include="SLZ.Marrow">
-            <HintPath>References\SLZ.Marrow.dll</HintPath>
-        </Reference>
-        <Reference Include="SLZ.Marrow.SDK">
-            <HintPath>References\SLZ.Marrow.SDK.dll</HintPath>
-        </Reference>
-        <Reference Include="UnhollowerBaseLib">
-            <HintPath>References\UnhollowerBaseLib.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.AssetBundleModule">
-          <HintPath>References\UnityEngine.AssetBundleModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.AudioModule">
-          <HintPath>References\UnityEngine.AudioModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>References\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.ImageConversionModule">
-          <HintPath>References\UnityEngine.ImageConversionModule.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="BoneMenu\BoneMenu.cs"/>
-        <Compile Include="BoneMenu\BoneMenuExtensions.cs"/>
-        <Compile Include="GlobalUsings.cs"/>
-        <Compile Include="Main.cs"/>
-        <Compile Include="Melon\ModConsole.cs"/>
-        <Compile Include="Melon\Preferences.cs"/>
-        <Compile Include="Melon\UserData.cs"/>
-        <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="Resources\Assets.cs" />
-        <Compile Include="Scripts\LabCamera.cs" />
-        <Compile Include="Scripts\Quagmire.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="Resources\Windows.bundle" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="Resources\Android.bundle" />
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+
     <PropertyGroup>
-        <PostBuildEvent>COPY "$(TargetPath)" "I:\Steam\steamapps\common\BONELAB\Mods"
-            COPY "$(TargetPath)" "$(SolutionDir)Staging\Mods"
-        </PostBuildEvent>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>TRACE;MELONLOADER</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DefineConstants>TRACE;MELONLOADER</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Links\**"/>
+        <Compile Remove="Staging\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Links\**"/>
+        <EmbeddedResource Remove="Staging\**"/>
+        <None Remove="Resources\LabCamWindows.bundle" />
+        <EmbeddedResource Include="Resources\LabCamWindows.bundle" />
+        <None Remove="Resources\LabCamAndroid.bundle" />
+        <EmbeddedResource Include="Resources\LabCamAndroid.bundle" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Links\**"/>
+        <None Remove="Staging\**"/>
+        <None Remove="Refs\**"/>
+        <None Remove=".gitignore"/>
+        <None Remove="README.md"/>
+        <None Remove="setup.bat"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="BoneLib">
+            <HintPath>Links\Mods\BoneLib.dll</HintPath>
+        </Reference>
+        <Reference Include="LabFusion">
+            <HintPath>Links\Mods\LabFusion.dll</HintPath>
+        </Reference>
+
+        <PackageReference Include="LavaGang.MelonLoader" Version="0.6.6"/>
+        <PackageReference Include="Bonelab.GameLibs.Steam" Version="6.0.0"/>
+        <PackageReference Include="Il2CppInterop.Runtime" Version="1.4.5"/>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Links\Mods&quot;&#xA;COPY &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Staging\Mods&quot;"/>
+    </Target>
+
 </Project>

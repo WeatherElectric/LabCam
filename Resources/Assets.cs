@@ -1,4 +1,4 @@
-﻿namespace LabCam.Resources;
+﻿namespace WeatherElectric.LabCam.Resources;
 
 internal static class Assets
 {
@@ -6,24 +6,11 @@ internal static class Assets
     
     public static void Load()
     {
-        _assetBundle = HelperMethods.LoadEmbeddedAssetBundle(Main.CurrAsm, HelperMethods.IsAndroid() ? "LabCam.Resources.Android.bundle" : "LabCam.Resources.Windows.bundle");
+        _assetBundle = HelperMethods.LoadEmbeddedAssetBundle(Main.CurrAsm, HelperMethods.IsAndroid() ? "WeatherElectric.LabCam.Resources.LabCamAndroid.bundle" : "WeatherElectric.LabCam.Resources.LabCamWindows.bundle");
+        ModConsole.Msg($"AssetBundle: {_assetBundle.name}", 1);
         if (_assetBundle == null) return;
-        Prefabs.LoadPrefabs();
         RenderTextures.LoadRenderTextures();
         Materials.LoadMaterials();
-    }
-    
-    internal static class Prefabs
-    {
-        public static GameObject CameraPrefab;
-        public static GameObject TriggerPrefab;
-        
-        internal static void LoadPrefabs()
-        {
-            if (_assetBundle == null) return;
-            if (CameraPrefab == null) CameraPrefab = _assetBundle.LoadPersistentAsset<GameObject>("Assets/LabCam/LabCam.prefab");
-            if (TriggerPrefab == null) TriggerPrefab = _assetBundle.LoadPersistentAsset<GameObject>("Assets/LabCam/RemoteTrigger.prefab");
-        }
     }
     
     internal static class RenderTextures
@@ -38,6 +25,8 @@ internal static class Assets
             if (HighQuality == null) HighQuality = _assetBundle.LoadPersistentAsset<RenderTexture>("Assets/LabCam/HighQuality.renderTexture");
             if (MediumQuality == null) MediumQuality = _assetBundle.LoadPersistentAsset<RenderTexture>("Assets/LabCam/MediumQuality.renderTexture");
             if (LowQuality == null) LowQuality = _assetBundle.LoadPersistentAsset<RenderTexture>("Assets/LabCam/LowQuality.renderTexture");
+            
+            ModConsole.Msg($"RenderTextures: {HighQuality.name}, {MediumQuality.name}, {LowQuality.name}", 1);
         }
     }
     
@@ -50,9 +39,11 @@ internal static class Assets
         internal static void LoadMaterials()
         {
             if (_assetBundle == null) return;
-            if (HighQuality == null) HighQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/HighQualityPreview.mat");
-            if (MediumQuality == null) MediumQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/MediumQualityPreview.mat");
-            if (LowQuality == null) LowQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/Materials/LowQualityPreview.mat");
+            if (HighQuality == null) HighQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/HighQualityPreview.mat");
+            if (MediumQuality == null) MediumQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/MediumQualityPreview.mat");
+            if (LowQuality == null) LowQuality = _assetBundle.LoadPersistentAsset<Material>("Assets/LabCam/LowQualityPreview.mat");
+            
+            ModConsole.Msg($"Materials: {HighQuality.name}, {MediumQuality.name}, {LowQuality.name}", 1);
         }
     }
 }

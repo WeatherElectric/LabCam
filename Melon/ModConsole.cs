@@ -1,4 +1,4 @@
-﻿namespace LabCam.Melon;
+﻿namespace WeatherElectric.LabCam.Melon;
 
 internal static class ModConsole
 {

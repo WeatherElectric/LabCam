@@ -1,48 +1,23 @@
-﻿namespace LabCam.Menu;
+﻿using LabFusion.Network;
+
+namespace WeatherElectric.LabCam.Menu;
 
 internal static class BoneMenu
 {
     public static void Setup()
     {
-        MenuCategory mainCat = MenuManager.CreateCategory("Weather Electric", "#6FBDFF");
-        MenuCategory subCat = mainCat.CreateCategory("LabCam", "#ffad2d");
-        subCat.CreateEnumElement("Quality", Color.white, Preferences.Quality.Value, v =>
+        var mainCat = Page.Root.CreatePage("<color=#6FBDFF>Weather Electric</color>", Color.white);
+        var subCat = mainCat.CreatePage("<color=#ffad2d>LabCam</color>", Color.white);
+        subCat.CreateEnum("Quality", Color.white, Preferences.Quality.Value, v =>
         {
-            Preferences.Quality.Value = v;
+            Preferences.Quality.Value = (ImageQuality)v;
             Preferences.OwnCategory.SaveToFile(false);
+            if (Main.FusionInstalled)
+            {
+                if (NetworkInfo.HasServer && NetworkInfo.IsClient) return;
+            }
             if (LabCamera.Instance != null) LabCamera.Instance.SetQuality();
             if (Quagmire.Instance != null) Quagmire.Instance.SetQuality();
         });
-        subCat.CreateFunctionElement("Spawn Camera", Color.green, SpawnCam);
-        subCat.CreateFunctionElement("Despawn Camera", Color.red, DespawnCam);
-        
-        subCat.CreateFunctionElement("Spawn Trigger", Color.green, SpawnTrigger);
-        subCat.CreateFunctionElement("Despawn Trigger", Color.red, DespawnTrigger);
-    }
-
-    private static void SpawnCam()
-    {
-        if (LabCamera.Instance != null) return;
-        var location = Player.playerHead.position + Player.playerHead.forward * 2f;
-        Object.Instantiate(Assets.Prefabs.CameraPrefab, location, Quaternion.identity);
-    }
-
-    private static void DespawnCam()
-    {
-        if (LabCamera.Instance == null) return;
-        Object.Destroy(LabCamera.Instance.gameObject);
-    }
-    
-    private static void SpawnTrigger()
-    {
-        if (Quagmire.Instance != null) return;
-        var location = Player.playerHead.position + Player.playerHead.forward * 2f;
-        Object.Instantiate(Assets.Prefabs.TriggerPrefab, location, Quaternion.identity);
-    }
-    
-    private static void DespawnTrigger()
-    {
-        if (Quagmire.Instance == null) return;
-        Object.Destroy(Quagmire.Instance.gameObject);
     }
 }

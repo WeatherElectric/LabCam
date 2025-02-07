@@ -1,13 +1,17 @@
 ﻿// ReSharper disable InvokeAsExtensionMethod, unhollowed extension methods are cursed.
 
-using SLZ.VRMK;
+using Il2CppHorizonBasedAmbientOcclusion.Universal;
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Pool;
+using LabFusion.Network;
+using UnityEngine.Rendering;
 
-namespace LabCam.Scripts;
+namespace WeatherElectric.LabCam.Scripts;
 
 [RegisterTypeInIl2Cpp]
 public class LabCamera : MonoBehaviour
 {
-    public static LabCamera Instance;
+    internal static LabCamera Instance;
 
     private Camera _camera;
     private AudioSource _captureSound;
@@ -18,13 +22,26 @@ public class LabCamera : MonoBehaviour
 
     private PlayerAvatarArt _avatarArt;
     
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private float _cooldownTimer;
+    private const float Cooldown = 5f;
+    private bool _cooldownUp;
     
-    private void Start()
+    private bool _markedForDestruction;
+    
+    // Has to be OnEnable, BL's pooling works by just disabling objects, and I want this code to run again every time it's spawned.
+    private void OnEnable()
     {
+        if (Instance != null && Instance != this)
+        {
+            _markedForDestruction = true;
+            var pool = GetComponent<Poolee>();
+            pool.Despawn();
+            return;
+        }
+        
+        Instance = this;
+        _markedForDestruction = false;
+        
         AssignFields();
         SetQuality();
         SetMixers();
@@ -32,20 +49,19 @@ public class LabCamera : MonoBehaviour
 
     private void SetMixers()
     {
-        var impactSfx = GetComponent<ImpactSFX>();
-        if (impactSfx != null) impactSfx.outputMixer = Audio.SFXMixer;
-        if (_captureSound != null) _captureSound.outputAudioMixerGroup = Audio.SFXMixer;
+        if (_captureSound != null) _captureSound.outputAudioMixerGroup = Audio.Gunshot;
     }
 
     // Temporary until we move on to ML 1.0, since we don't have fieldinjection for IL2CPP without adding another dependency, and I don't want to do that for a mod like this.
+    // so ML 0.6 added fieldinjection, so I could avoid all this, right?
+    // wrong! it's interop, made by bepinex, and it's SHIT! this works still i guess
     private void AssignFields()
     {
-        _camera = transform.Find("Camera").GetComponent<Camera>();
-        _captureSound = transform.Find("CaptureSound").GetComponent<AudioSource>();
-        _previewRenderer = transform.Find("LensPreview").GetComponent<MeshRenderer>();
-        _flashRenderer = transform.Find("FlashWarning").gameObject;
-        _light = transform.Find("Flash").gameObject;
-        _avatarArt = Player.rigManager.gameObject.GetComponent<PlayerAvatarArt>();
+        _camera = transform.Find("Systems/Camera").GetComponent<Camera>();
+        _captureSound = transform.Find("Audio/CaptureSound").GetComponent<AudioSource>();
+        _previewRenderer = transform.Find("UI/CameraScreen").GetComponent<MeshRenderer>();
+        _flashRenderer = transform.Find("UI/FlashWarning").gameObject;
+        _light = transform.Find("Systems/Flash").gameObject;
     }
     
     // TODO: Maybe just modify the material instead of swapping it out? I'd need Scanline's shadercode though since the property to change isn't MainTex.
@@ -76,9 +92,43 @@ public class LabCamera : MonoBehaviour
         _flash = !_flash;
         _flashRenderer.SetActive(_flash);
     }
+    
+    // i think spamming capture is why my GPU drivers crashed, so this should prevent that
+    public void Update()
+    {
+        if (_cooldownUp) return;
+        if (_cooldownTimer < Cooldown)
+        {
+            _cooldownUp = true;
+            _cooldownTimer = 0f;
+            return;
+        }
+        _cooldownTimer += Time.deltaTime;
+    }
 
     public void Capture()
     {
+        if (!_cooldownUp) return;
+
+        if (Main.FusionInstalled)
+        {
+            if (NetworkInfo.HasServer && NetworkInfo.IsClient)
+            {
+                CaptureFusionClient();
+                return;
+            }
+        }
+
+        // HBAO fucks up the image, temporarily disable it then restore it to what it was before
+        var dictionary = new Dictionary<HBAO, ClampedFloatParameter>();
+        var zeroIntensity = new ClampedFloatParameter(0f, 0f, 1f, true);
+        foreach (var hbao in Main.Hbao)
+        {
+            dictionary.Add(hbao, hbao.intensity);
+            SetHbao(hbao, zeroIntensity);
+        }
+        
+        if (_avatarArt == null) _avatarArt = Player.ControllerRig.GetComponent<PlayerAvatarArt>();
         if (_camera == null || _camera.targetTexture == null)
         {
             ModConsole.Error("Camera, render texture, or both are/is null!");
@@ -95,6 +145,25 @@ public class LabCamera : MonoBehaviour
         SetHairMeshes(false);
         SetQuagmire(true);
         if (_flash) Invoke(nameof(LightDisable), 0.3f);
+        
+        foreach (var hbao in dictionary)
+        {
+            SetHbao(hbao.Key, hbao.Value);
+        }
+        
+        _cooldownUp = false;
+    }
+
+    private void CaptureFusionClient()
+    {
+        _captureSound.Play();
+        if (_flash) _light.SetActive(true);
+        if (_flash) Invoke(nameof(LightDisable), 0.3f);
+    }
+
+    private static void SetHbao(HBAO hbao, ClampedFloatParameter intensity)
+    {
+        hbao.intensity = intensity;
     }
 
     private static void SaveRenderedImage(Texture2D image)
@@ -105,7 +174,6 @@ public class LabCamera : MonoBehaviour
         if (Preferences.Quality.Value == ImageQuality.Low)
         {
             path = Path.Combine(UserData.ModPath, $"BONELAB_{Main.CurrentMap}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg");
-            // Don't need PNG for a 480p image.
             bytes = ImageConversion.EncodeToJPG(image);
         }
         else
@@ -115,14 +183,13 @@ public class LabCamera : MonoBehaviour
         }
 
         File.WriteAllBytes(path, bytes);
-        // Destroy the Texture2D since it's not needed, the PNG/JPG is saved, save some memory by deleting the Texture2D.
         Destroy(image);
     }
 
     private Texture2D Render()
     {
-        RenderTexture rt = _camera.targetTexture;
-        Texture2D image = new Texture2D(rt.width, rt.height, rt.graphicsFormat, rt.mipmapCount, TextureCreationFlags.None);
+        var rt = _camera.targetTexture;
+        var image = new Texture2D(rt.width, rt.height, rt.graphicsFormat, rt.mipmapCount, TextureCreationFlags.None);
         _camera.Render();
         RenderTexture.active = rt;
         image.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
@@ -156,11 +223,13 @@ public class LabCamera : MonoBehaviour
         Quagmire.Instance.giggity.SetActive(state);
         Quagmire.Instance.giggityPreview.SetActive(state);
     }
-    
-    private void OnDestroy()
+
+    public void OnDisable()
     {
+        if (_markedForDestruction) return;
         Instance = null;
     }
     
+    // ReSharper disable once ConvertToPrimaryConstructor, no;
     public LabCamera(IntPtr ptr) : base(ptr) { }
 }

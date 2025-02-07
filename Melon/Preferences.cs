@@ -1,6 +1,6 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global, these categories may be used outside of this namespace to create bonemenu options.
 
-namespace LabCam.Melon;
+namespace WeatherElectric.LabCam.Melon;
 
 internal static class Preferences
 {
@@ -13,10 +13,10 @@ internal static class Preferences
     public static void Setup()
     {
         LoggingMode = GlobalCategory.GetEntry<int>("LoggingMode") ?? GlobalCategory.CreateEntry("LoggingMode", 0, "Logging Mode", "The level of logging to use. 0 = Important Only, 1 = All");
-        GlobalCategory.SetFilePath(MelonUtils.UserDataDirectory + "/WeatherElectric.cfg");
+        GlobalCategory.SetFilePath(MelonEnvironment.UserDataDirectory + "/WeatherElectric.cfg");
         GlobalCategory.SaveToFile(false);
         Quality = OwnCategory.CreateEntry("ImageQuality", HelperMethods.IsAndroid() ? ImageQuality.Low : ImageQuality.High, "Image Quality", "The quality of the images taken. Low = 480p, Medium = 720p, High = 1080p");
-        OwnCategory.SetFilePath(MelonUtils.UserDataDirectory + "/WeatherElectric.cfg");
+        OwnCategory.SetFilePath(MelonEnvironment.UserDataDirectory + "/WeatherElectric.cfg");
         OwnCategory.SaveToFile(false);
         ModConsole.Msg("Finished preferences setup for LabCam", 1);
     }

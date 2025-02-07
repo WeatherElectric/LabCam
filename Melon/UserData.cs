@@ -1,10 +1,10 @@
-﻿namespace LabCam.Melon;
+﻿namespace WeatherElectric.LabCam.Melon;
 
 internal static class UserData
 {
-    private static readonly string WeatherElectricPath = Path.Combine(MelonUtils.UserDataDirectory, "Weather Electric");
+    private static readonly string WeatherElectricPath = Path.Combine(MelonEnvironment.UserDataDirectory, "Weather Electric");
 
-    public static readonly string ModPath = Path.Combine(MelonUtils.UserDataDirectory, "Weather Electric/LabCam");
+    public static readonly string ModPath = Path.Combine(MelonEnvironment.UserDataDirectory, "Weather Electric/LabCam");
 
     public static void Setup()
     {
